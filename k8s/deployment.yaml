@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: edgecontainertester
+  namespace: default
+  labels:
+    app: edgecontainertester
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: edgecontainertester
+  template:
+    metadata:
+      labels:
+        app: edgecontainertester
+    spec:
+      containers:
+        - name: edgecontainertester
+          # Replace REGISTRY_PLACEHOLDER with your ACR login server before enabling Flux,
+          # or let the CI workflow populate this on the first push to main.
+          image: REGISTRY_PLACEHOLDER/edgecontainertester:latest
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+            limits:
+              cpu: "200m"
+              memory: "128Mi"

@@ -1,0 +1,44 @@
+name: Build and Push to ACR
+
+on:
+  push:
+    branches: ["main"]
+
+env:
+  ACR_REGISTRY: ${{ secrets.ACR_REGISTRY }}   # e.g. myregistry.azurecr.io
+  IMAGE_NAME: edgecontainertester
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to Azure Container Registry
+        uses: azure/docker-login@v2
+        with:
+          login-server: ${{ env.ACR_REGISTRY }}
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+
+      - name: Build and push Docker image
+        run: |
+          IMAGE_TAG=${{ env.ACR_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          IMAGE_LATEST=${{ env.ACR_REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          docker build -t "$IMAGE_TAG" -t "$IMAGE_LATEST" .
+          docker push "$IMAGE_TAG"
+          docker push "$IMAGE_LATEST"
+
+      - name: Update Kubernetes deployment image tag
+        run: |
+          sed -i "s|image:.*|image: ${{ env.ACR_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}|" k8s/deployment.yaml
+
+      - name: Commit updated manifest
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "ci: update image tag to ${{ github.sha }}"
+          file_pattern: k8s/deployment.yaml
