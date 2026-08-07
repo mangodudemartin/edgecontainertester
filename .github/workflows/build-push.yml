@@ -42,3 +42,18 @@ jobs:
         with:
           commit_message: "ci: update image tag to ${{ github.sha }}"
           file_pattern: k8s/deployment.yaml
+
+      - name: Set up kubeconfig
+        run: |
+          mkdir -p "$HOME/.kube"
+          echo "${{ secrets.KUBECONFIG }}" | base64 -d > "$HOME/.kube/config"
+          chmod 600 "$HOME/.kube/config"
+
+      - name: Push ACR pull secret into cluster
+        run: |
+          kubectl create secret docker-registry acr-pull-secret \
+            --docker-server="${{ env.ACR_REGISTRY }}" \
+            --docker-username="${{ secrets.ACR_USERNAME }}" \
+            --docker-password="${{ secrets.ACR_PASSWORD }}" \
+            --namespace=default \
+            --dry-run=client -o yaml | kubectl apply -f -
