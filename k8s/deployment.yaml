@@ -19,7 +19,7 @@ spec:
         - name: edgecontainertester
           # Replace REGISTRY_PLACEHOLDER with your ACR login server before enabling Flux,
           # or let the CI workflow populate this on the first push to main.
-          image: csdevedge.azurecr.io/edgecontainertester:1292fcb20df2a4f73b971c8451460f41215ea53e
+          image: csdevedge.azurecr.io/edgecontainertester:51543beb68acc380121f66cf08c1ddadda49b1c9
           ports:
             - containerPort: 8080
           resources:
