@@ -1,0 +1,23 @@
+input:
+  label: "mqtt_input2"
+  mqtt:
+    urls: ["tcp://emqxedge:1883"]
+    client_id: "mqtt_client_in2"
+    connect_timeout: 30s
+    topics: ["test/input1"]
+    auto_replay_nacks: true
+
+pipeline:
+  processors:
+    - mapping: |
+        root.sensorid = "Im Output 2!!"
+
+output:
+  label: "mqtt_output2"
+  mqtt:
+    urls: ["tcp://emqxedge:1883"]
+    client_id: "mqtt_client_out2"
+    connect_timeout: 30s
+    topic: "test/output/2"
+    qos: 1
+    retained: false
