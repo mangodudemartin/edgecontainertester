@@ -10,7 +10,7 @@ input:
 pipeline:
   processors:
     - mapping: |
-        root.sensorid = "Im Output 2!!"
+        root.sensorid = "Im Output 2!!!!!!!!!!"
 
 output:
   label: "mqtt_output2"
