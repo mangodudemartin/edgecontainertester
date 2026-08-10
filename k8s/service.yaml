@@ -6,10 +6,17 @@ metadata:
   labels:
     app: edgecontainertester
 spec:
-  type: ClusterIP
+  # Expose the service externally via a NodePort so the cluster node IP:nodePort
+  # can be used to access the app. If you're running a cloud provider, consider
+  # `LoadBalancer` instead.
+  type: NodePort
   selector:
     app: edgecontainertester
   ports:
     - name: http
-      port: 80
+      port: 8080
       targetPort: 8080
+      protocol: TCP
+      # Choose a nodePort in the 30000-32767 range. Change if this conflicts
+      # with your cluster configuration.
+      nodePort: 30080
