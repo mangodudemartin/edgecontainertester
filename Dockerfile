@@ -1,5 +1,5 @@
 # Start from the base upstream image (e.g., Redpanda Connect)
-FROM docker.redpanda.com/redpandadata/connect:latest
+FROM redpandadata/connect:latest
 
 # Copy your local config files from the repo into the container
 COPY ./configs /streams
