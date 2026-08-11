@@ -1,1 +1,3 @@
-
+paths:
+  cam1:
+    source: rtsp://user:password@192.168.1.100:554/stream1
