@@ -1,12 +1,11 @@
-name: Build and Push to ACR
+name: Build and Push Microservices to ACR
 
 on:
   push:
     branches: ["main"]
 
 env:
-  ACR_REGISTRY: ${{ secrets.ACR_REGISTRY }}   # e.g. myregistry.azurecr.io
-  IMAGE_NAME: edgecontainertester
+  ACR_REGISTRY: ${{ secrets.ACR_REGISTRY }} # e.g., myregistry.azurecr.io
   PLATFORMS: linux/amd64,linux/arm64
 
 jobs:
@@ -14,6 +13,16 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        service:
+          - name: mediamtx
+            context: ./mediamtx
+            dockerfile: ./mediamtx/Dockerfile
+          - name: rulesengine
+            context: ./rulesengine
+            dockerfile: ./rulesengine/Dockerfile
 
     steps:
       - name: Checkout repository
@@ -35,12 +44,12 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
-          context: .
-          file: ./Dockerfile
+          context: ${{ matrix.service.context }}
+          file: ${{ matrix.service.dockerfile }}
           platforms: ${{ env.PLATFORMS }}
           push: true
           tags: |
-            ${{ env.ACR_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
-            ${{ env.ACR_REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+            ${{ env.ACR_REGISTRY }}/${{ matrix.service.name }}:${{ github.sha }}
+            ${{ env.ACR_REGISTRY }}/${{ matrix.service.name }}:latest
+          cache-from: type=gha,scope=${{ matrix.service.name }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.service.name }}
