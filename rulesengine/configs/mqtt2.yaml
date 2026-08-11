@@ -10,7 +10,7 @@ input:
 pipeline:
   processors:
     - mapping: |
-        root.sensorid = "Im Output 2, deployed via GitOps, Round 3"
+        root.sensorid = "Im Output 2, deployed via GitOps, Round 4"
 
 output:
   label: "mqtt_output2"
