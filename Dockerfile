@@ -5,5 +5,4 @@ FROM redpandadata/connect:latest
 COPY ./configs /streams
 
 # Set default execution command to use the baked config
-ENTRYPOINT ["rpk", "connect"]
 CMD ["streams", "/streams/*.yaml"]
