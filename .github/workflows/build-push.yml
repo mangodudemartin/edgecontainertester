@@ -44,13 +44,3 @@ jobs:
             ${{ env.ACR_REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
-      - name: Update Kubernetes deployment image tag
-        run: |
-          sed -i "s|image:.*|image: ${{ env.ACR_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}|" k8s/deployment.yaml
-
-      - name: Commit updated manifest
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "ci: update image tag to ${{ github.sha }}"
-          file_pattern: k8s/deployment.yaml
